@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="org.shpstartup.android.yocount.OneCategoryActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <include layout="@layout/toolbar"/>
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:id="@+id/linearstart"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginTop="40dp"
+        android:orientation="vertical"
+        android:transitionName="@string/transition_name">
+
+        <include layout="@layout/topnickname"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#B8B8B8"
+            android:gravity="center">
+
+            <RelativeLayout
+                android:id="@+id/relative_layout_1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="27dp"
+                android:background="@color/maintheme"
+                android:elevation="4dp"
+                android:orientation="vertical"
+                >
+
+                <TextView
+                    android:id="@+id/category_front_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:fontFamily="sans-serif-condensed-light"
+                    android:gravity="center"
+                    android:text="CATEGORY NAME"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
+                    />
+
+                <RelativeLayout
+                    android:id="@+id/relative_layout_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_below="@+id/category_front_tv"
+                    android:orientation="horizontal"
+                    android:weightSum="7"
+                    >
+
+                    <TextView
+                        android:id="@+id/n_name"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="-10dp"
+                        android:fontFamily="sans-serif-condensed"
+                        android:gravity="center_horizontal"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="44sp"
+                        />
+
+                    <ImageView
+                        android:id="@+id/imageadd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="82dp"
+                        android:layout_alignRight="@+id/n_name"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_weight="1"
+                        android:src="@drawable/ic_photo_camera_black_24dp"
+                        />
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/category_desc_tv_front"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/relative_layout_2"
+                    android:fontFamily="sans-serif-condensed-light"
+                    android:gravity="center"
+                    android:text="CATEGORY_DESCRIPTION"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
+                    />
+
+                <TextView
+                    android:id="@+id/n_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/category_desc_tv_front"
+                    android:fontFamily="sans-serif-condensed"
+                    android:gravity="center"
+                    android:text="SELF OBSESSED MORDERN THINGY NARCISSIT"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    />
+
+                <RelativeLayout
+                    android:id="@+id/relative_layout_4"
+                    android:layout_width="match_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_below="@+id/n_description"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="15dp"
+                    android:background="#ffffff"
+                    android:gravity="center_horizontal|center"
+                    android:orientation="vertical"
+                    >
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent"
+                        android:background="@drawable/backnumb"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/count_tv_front"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="30dp"
+                            android:fontFamily="sans-serif-condensed"
+                            android:gravity="center"
+                            android:text="COUNT"
+                            android:textColor="@color/md_grey_600"
+                            android:textSize="22sp"
+                            />
+
+                        <TextView
+                            android:id="@+id/n_number"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/count_tv_front"
+                            android:layout_marginTop="30dp"
+                            android:fontFamily="sans-serif-condensed"
+                            android:gravity="center"
+                            android:text="123456"
+                            android:textColor="@color/black"
+                            android:textSize="92sp"
+                            />
+                    </RelativeLayout>
+                </RelativeLayout>
+            </RelativeLayout>
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_margin="@dimen/fab_margin"
+                android:src="@drawable/ic_share_white_48dp"/>
+        </RelativeLayout>
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

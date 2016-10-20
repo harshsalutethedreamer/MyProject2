@@ -1,0 +1,28 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="30dp"
+    android:background="@color/md_grey_400"
+    android:gravity="center"
+    android:orientation="horizontal">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
+        android:text="USER NAME : "
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        />
+
+    <TextView
+        android:id="@+id/nickname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-condensed"
+        android:text="YOCOUNT"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold"/>
+
+</LinearLayout>

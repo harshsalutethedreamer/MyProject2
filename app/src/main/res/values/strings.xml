@@ -1,0 +1,81 @@
+<resources>
+    <string name="app_name">yoCount</string>
+    <string name="action_settings">Settings</string>
+    <string name="add_category">ADD CATEGORY</string>
+    <string name="selectdate">Select Date</string>
+    <string name="nick_name">Nick Name</string>
+    <string name="skip">SKIP</string>
+    <string name="next">NEXT</string>
+    <string name="gotit">GOT IT</string>
+    <array name="array_dot_active">
+        <item>@color/dot_light_screen1</item>
+        <item>@color/dot_light_screen1</item>
+        <item>@color/dot_light_screen1</item>
+        <item>@color/dot_light_screen1</item>
+        <item>@color/dot_light_screen1</item>
+    </array>
+
+    <array name="array_dot_inactive">
+        <item>@color/dot_dark_screen1</item>
+        <item>@color/dot_dark_screen1</item>
+        <item>@color/dot_dark_screen1</item>
+        <item>@color/dot_dark_screen1</item>
+        <item>@color/dot_dark_screen1</item>
+    </array>
+
+    <string name="picture_title">numero_picture</string>
+    <string name="picture_description">Your Memories</string>
+    <string name="title_activity_gallery2">Gallery2Activity</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="edit_category">Edit Category</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="username">Username</string>
+
+    <string-array name="category_choice">
+        <item>Edit Category</item>
+        <item>Delete Category</item>
+        <item>Go To Gallery</item>
+        <!--<item>Create Video</item>-->
+        <!--<item>Share Video</item>-->
+    </string-array>
+
+    <string-array name="category_flags">
+        <item>@drawable/ic_mode_edit_white_48dp</item>
+        <item>@drawable/ic_delete_white_48dp</item>
+        <item>@drawable/ic_play_circle_outline_white_24dp</item>
+        <!--<item>@drawable/ic_play_circle_outline_white_24dp</item>-->
+        <!--<item>@drawable/ic_play_circle_outline_white_24dp</item>-->
+    </string-array>
+
+    <string-array name="photo_type">
+        <item>Camera</item>
+        <item>Gallery</item>
+    </string-array>
+
+    <string name="appname">yoCount</string>
+
+    <string name="transition_name">transition:NAME</string>
+    <string name="transition_count">transition:COUNT</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--Text Indroduction -->
+    <string name="instruction">INSTRUCTIONS:</string>
+    <string name="step1">Step 1:</string>
+    <string name="step1_text">Tap “plus button” to add categories.</string>
+    <string name="step2">Step 2:</string>
+    <string name="step2_text">Enter the Category name e.g. Books.</string>
+    <string name="step3">Step 3:</string>
+    <string name="step3_text">Enter the Description e.g. Biographies and Startups Genre.</string>
+    <string name="step4">Step 4:</string>
+    <string name="step4_text">Enter the count or default “0”.</string>
+    <string name="step5">Step 5:</string>
+    <string name="step5_text">Enter the starting date for category.</string>
+    <string name="step6">Step 6:</string>
+    <string name="step6_text">You’ve successfully made the category.</string>
+    <string name="end_instruction1">Start adding pictures with “camera” button.</string>
+    <string name="end_instruction2">Make it count!</string>
+    <string name="know_about_app">Know About App</string>
+
+</resources>
