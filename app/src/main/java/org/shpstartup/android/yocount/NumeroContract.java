@@ -7,7 +7,7 @@ import android.provider.BaseColumns;
  * Created by harshgupta on 10/09/16.
  */
 public class NumeroContract {
-    interface NumeroColumns{
+    public interface NumeroColumns{
         String NUMERO_ID ="_id";
         String NUMERO_CATEGORY="numero_category";
         String NUMERO_DESCRIPTION="numero_description";

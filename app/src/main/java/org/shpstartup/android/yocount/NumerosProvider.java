@@ -24,16 +24,24 @@ public class NumerosProvider extends ContentProvider {
     private static final int NUMEROS = 100;
     private static final int NUMEROS_ID = 101;
 
+    private static final int IMAGECATEGORIES = 200;
+    private static final int IMAGECATEGORIES_ID = 201;
+
+
     private static UriMatcher buildUriMatcher(){
         final UriMatcher matcher=new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = NumeroContract.CONTENT_AUTHORITY;
+        final String authority_image = ImageContract.CONTENT_AUTHORITY;
         matcher.addURI(authority,"yocount",NUMEROS);
         matcher.addURI(authority,"yocount/*",NUMEROS_ID);
+        matcher.addURI(authority_image,"imagecount",IMAGECATEGORIES);
+        matcher.addURI(authority_image,"imagecount/*",IMAGECATEGORIES_ID);
         return matcher;
     }
 
     @Override
     public boolean onCreate() {
+        Log.d("ruworking","checking");
         mOpenHelper = new NumeroDatabase(getContext());
         return true;
     }
@@ -63,10 +71,11 @@ public class NumerosProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         final SQLiteDatabase db = mOpenHelper.getReadableDatabase();
         final int match = sUriMatcher.match(uri);
-
+        Log.d("imagecategories",String.valueOf(match));
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+        SQLiteQueryBuilder queryBuilderx = new SQLiteQueryBuilder();
         queryBuilder.setTables(NumeroDatabase.Tables.NUMEROS);
-
+        queryBuilderx.setTables(NumeroDatabase.Tables.IMAGECOUNT);
         switch (match){
             case NUMEROS:
                 break;
@@ -74,10 +83,21 @@ public class NumerosProvider extends ContentProvider {
                 String id = NumeroContract.Numeros.getFriendId(uri);
                 queryBuilder.appendWhere(BaseColumns._ID+"="+id);
                 break;
+            case IMAGECATEGORIES:
+                break;
+            case IMAGECATEGORIES_ID:
+                Log.d("imagecategories","isitcoming");
+                String ida = ImageContract.ImageCategory.getFriendId(uri);
+                queryBuilderx.appendWhere(BaseColumns._ID+"="+ida);
             default:
                 throw new IllegalArgumentException("Unknown Uri: " + uri);
         }
-        Cursor cursor = queryBuilder.query(db,projection,selection,selectionArgs,null,null,sortOrder);
+        Cursor cursor;
+        if(match==100 || match==101) {
+            cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
+        }else{
+            cursor = queryBuilderx.query(db, projection, selection, selectionArgs, null, null, sortOrder);
+        }
         return cursor;
     }
 
@@ -91,6 +111,9 @@ public class NumerosProvider extends ContentProvider {
             case NUMEROS:
                 long recordId = db.insertOrThrow(NumeroDatabase.Tables.NUMEROS, null , values);
                 return NumeroContract.Numeros.buildFriendUri(String.valueOf(recordId));
+            case IMAGECATEGORIES:
+                long recordIdx = db.insertOrThrow(NumeroDatabase.Tables.IMAGECOUNT, null , values);
+                return ImageContract.ImageCategory.buildFriendUri(String.valueOf(recordIdx));
             default:
                 throw new IllegalArgumentException("Unknown Uri: " + uri);
         }
@@ -111,6 +134,11 @@ public class NumerosProvider extends ContentProvider {
                 selectionCriteria=BaseColumns._ID + "=" + id
                         + (!TextUtils.isEmpty(s)?" AND(" + s + ")" : "");
                         break;
+            case IMAGECATEGORIES_ID:
+                String mid= ImageContract.ImageCategory.getFriendId(uri);
+                selectionCriteria=BaseColumns._ID + "=" + mid
+                        + (!TextUtils.isEmpty(s)?" AND(" + s + ")" : "");
+                break;
             default:
                 throw new IllegalArgumentException("Unknown Uri: " + uri);
         }
@@ -136,6 +164,12 @@ public class NumerosProvider extends ContentProvider {
                 String selectionCriteria = BaseColumns._ID+ "=" + id
                     + (!TextUtils.isEmpty(s)?" AND(" + s + ")" : "");
                 return db.delete(NumeroDatabase.Tables.NUMEROS,selectionCriteria,strings);
+
+            case IMAGECATEGORIES_ID:
+                String mid= ImageContract.ImageCategory.getFriendId(uri);
+                String mselectionCriteria = BaseColumns._ID+ "=" + mid
+                        + (!TextUtils.isEmpty(s)?" AND(" + s + ")" : "");
+                return db.delete(NumeroDatabase.Tables.IMAGECOUNT,mselectionCriteria,strings);
 
             default:
                 throw new IllegalArgumentException("Unknown Uri: " + uri);

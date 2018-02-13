@@ -67,15 +67,16 @@ public class NumeroDialog extends DialogFragment {
                     });
         }else if(command.equals(IMAGE_SELECTION)){
             builder.setTitle(org.shpstartup.android.yocount.R.string.take_photo)
-                    .setItems(org.shpstartup.android.yocount.R.array.photo_type, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            if(which==0){
-                                getTargetFragment().onActivityResult(3, Activity.RESULT_OK, getActivity().getIntent());
-                            }else if(which==1){
-                                getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, getActivity().getIntent());
+                        .setItems(org.shpstartup.android.yocount.R.array.photo_type, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (which == 0) {
+                                    getTargetFragment().onActivityResult(3, Activity.RESULT_OK, getActivity().getIntent());
+                                } else if (which == 1) {
+                                    getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, getActivity().getIntent());
+                                }
                             }
-                        }
-                    });
+                        });
+
         }
 
         return builder.create();

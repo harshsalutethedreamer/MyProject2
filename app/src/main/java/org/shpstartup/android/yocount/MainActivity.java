@@ -2,11 +2,14 @@ package org.shpstartup.android.yocount;
 
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
@@ -29,18 +32,34 @@ import android.widget.Toast;
 import java.io.File;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
-        private ViewPager mViewPager;
-        private PagerAdapter mPager;
-        Bitmap bitmap1;
-        private AsyncTask task;
+    private ViewPager mViewPager;
+    private PagerAdapter mPager;
+    Bitmap bitmap1;
+    private AsyncTask task;
     private String username,nickname;
     SharedPreferences pref;
     private Activity activity;
+    private Fragment fragment;
+    private MainFragment mainFragment;
+    private FavouriteActivity favouriteActivity;
+    private AlbumStorageDirFactory mAlbumStorageDirFactory = null;
+    private Cursor mCursor;
+    private ContentResolver mContentResolver;
+    int NUM_FILES=0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        this.mainFragment=new MainFragment();
+        this.favouriteActivity=new FavouriteActivity();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+            mAlbumStorageDirFactory = new FroyoAlbumDirFactory();
+        } else {
+            mAlbumStorageDirFactory = new BaseAlbumDirFactory();
+        }
 
         activity=MainActivity.this;
 
@@ -97,9 +116,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public Fragment getItem(int position) {
             Log.d("working","check");
             if(position==0){
-                return new FavouriteActivity();
+                return favouriteActivity;
+                //return new FavouriteActivity();
             }else{
-                return new MainFragment();
+                return mainFragment;
+//                return new MainFragment();
             }
         }
 
@@ -109,9 +130,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    void setAdapter(int position) {
+    public void setAdapter(int position) {
         Log.d("mainsetadapter",String.valueOf(position));
-        mViewPager.getAdapter().notifyDataSetChanged();
+        mainFragment.changeFragment();
     }
 
     @Override
@@ -136,12 +157,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }else if(countryCode==2){
                 if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())){
                     String category_name = name.toLowerCase();
-                    File folder = new File(Environment.getExternalStorageDirectory() + "/numeros/" + category_name);
+                    File folder = mAlbumStorageDirFactory.getAlbumStorageDir(getAlbumName());
                     if (folder.exists()) {
-                        Intent i = new Intent(MainActivity.this,GalleryActivity.class);
-                        i.putExtra("category_name",category_name);
-                        i.putExtra("_id",_id);
-                        startActivity(i);
+                        mContentResolver = getContentResolver();
+                        String selection = ImageContract.ImageColumns.IMAGECATEGORY_NAME + " == '"+category_name+"'";
+                        mCursor = mContentResolver.query(ImageContract.URI_TABLE, null,selection,null,null);
+                        NUM_FILES=mCursor.getCount();
+                        if(NUM_FILES!=0){
+                            Intent i = new Intent(MainActivity.this,GalleryActivity.class);
+                            i.putExtra("category_name",category_name);
+                            i.putExtra("_id",_id);
+                            startActivity(i);
+                        }else{
+                            Toast.makeText(MainActivity.this, "No Image Exist", Toast.LENGTH_SHORT).show();
+                        }
                     }else{
                         Toast.makeText(MainActivity.this, "No Image Exist", Toast.LENGTH_SHORT).show();
                     }
@@ -154,11 +183,45 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-            if(view.getId()== org.shpstartup.android.yocount.R.id.linearstart){
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-            }
+        if(view.getId()== org.shpstartup.android.yocount.R.id.linearstart){
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
+    public void onChangeFavouirteFragment(){
+        Log.d("working","yesworking");
+        favouriteActivity.changeFragment();
+    }
+
+    /* Photo album for this application */
+    private String getAlbumName() {
+        return getString(R.string.app_name_small);
+    }
+
+    public void playbutton(String name,int _id){
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())){
+            String category_name = name.toLowerCase();
+            File folder = mAlbumStorageDirFactory.getAlbumStorageDir(getAlbumName());
+            if (folder.exists()) {
+                mContentResolver = getContentResolver();
+                String selection = ImageContract.ImageColumns.IMAGECATEGORY_NAME + " == '"+category_name+"'";
+                mCursor = mContentResolver.query(ImageContract.URI_TABLE, null,selection,null,null);
+                NUM_FILES=mCursor.getCount();
+                if(NUM_FILES!=0){
+                    Intent i = new Intent(MainActivity.this,GalleryActivity.class);
+                    i.putExtra("category_name",category_name);
+                    i.putExtra("_id",_id);
+                    startActivity(i);
+                }else{
+                    Toast.makeText(MainActivity.this, "No Image Exist", Toast.LENGTH_SHORT).show();
+                }
+            }else{
+                Toast.makeText(MainActivity.this, "No Image Exist", Toast.LENGTH_SHORT).show();
+            }
+        }else{
+            Toast.makeText(MainActivity.this, "External storage is not mounted READ/WRITE", Toast.LENGTH_LONG).show();
+        }
+    }
 
 }

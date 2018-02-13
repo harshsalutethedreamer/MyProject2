@@ -7,11 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.BaseColumns;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +17,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import org.shpstartup.android.yocount.activities.SubjectSingleDetail;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -36,19 +36,23 @@ public class NumeroRecyclerAdapter extends RecyclerView.Adapter<NumeroRecyclerVi
     private int NUM_PAGES;
     private RecyclerView mRecyclerView;
     private MainActivity mainActivity;
+    private MainFragment mainFragment;
+    private NumeroRecyclerViewHolder.gotogallery mgotogallery;
 
-    public NumeroRecyclerAdapter(MainActivity activity,Context ncontext, List<InformationActivity> mnumeros,FragmentManager fragmentManager,RecyclerView mRecyclerView) {
+    public NumeroRecyclerAdapter(MainActivity activity,Context ncontext, List<InformationActivity> mnumeros,FragmentManager fragmentManager,RecyclerView mRecyclerView,MainFragment mainFragment) {
         this.ncontext = ncontext;
         this.mnumeros = mnumeros;
         sFragmentManager=fragmentManager;
         this.mRecyclerView=mRecyclerView;
         mainActivity=activity;
+        this.mainFragment=mainFragment;
     }
 
     @Override
     public void onBindViewHolder(final NumeroRecyclerViewHolder holder, final int position) {
 
         Log.d("bindview",String.valueOf(mnumeros.get(position).getTotalcount()));
+
         String ab=mnumeros.get(position).getTopicname().substring(0,1).toUpperCase();
         holder.nname.setText(ab);
         holder.nname2.setText(mnumeros.get(position).getTopicname().toLowerCase().substring(1));
@@ -163,6 +167,7 @@ public class NumeroRecyclerAdapter extends RecyclerView.Adapter<NumeroRecyclerVi
                 textView.setText(String.valueOf(mcountfind+1));
                 Uri uri = NumeroContract.Numeros.buildFriendUri(String.valueOf(_id));
                 int recordsUpdated = mContentResolver.update(uri, values, null, null);
+                mainActivity.onChangeFavouirteFragment();
             }
         });
 
@@ -178,8 +183,17 @@ public class NumeroRecyclerAdapter extends RecyclerView.Adapter<NumeroRecyclerVi
                     textView.setText(String.valueOf(mcountfind - 1));
                     Uri uri = NumeroContract.Numeros.buildFriendUri(String.valueOf(_id));
                     int recordsUpdated = mContentResolver.update(uri, values, null, null);
+                    mainActivity.onChangeFavouirteFragment();
                 }
             }
+        });
+
+        holder.playbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mainActivity.playbutton(mnumeros.get(position).getTopicname().toLowerCase(),mnumeros.get(position).getId());
+            }
+
         });
 
         holder.insidebox.setOnClickListener(new View.OnClickListener() {
@@ -187,15 +201,30 @@ public class NumeroRecyclerAdapter extends RecyclerView.Adapter<NumeroRecyclerVi
             public void onClick(View view) {
                 Log.d("insidebox","coming");
                 int _id = mnumeros.get(position).getId();
-                Intent intent = new Intent(ncontext, OneCategoryActivity.class);
-                intent.putExtra(OneCategoryActivity.ID, _id);
-                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        // the context of the activity
-                        mainActivity,
-                        new Pair<View, String>(holder.insidebox,
-                                ncontext.getString(R.string.transition_name))
-                );
-                ActivityCompat.startActivity(mainActivity, intent, options.toBundle());
+//                Intent intent = new Intent(ncontext, OneCategoryActivity.class);
+//                intent.putExtra(OneCategoryActivity.ID, _id);
+//                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+//                        // the context of the activity
+//                        mainActivity,
+//                        new Pair<View, String>(holder.insidebox,
+//                                ncontext.getString(R.string.transition_name))
+//                );
+//                ActivityCompat.startActivity(mainActivity, intent, options.toBundle());
+                Intent i = new Intent(mainActivity, SubjectSingleDetail.class);
+                Bundle args=new Bundle();
+                args.putInt("_id",_id);
+                i.putExtras(args);
+                ncontext.startActivity(i);
+//                Fragment fragment = new OneCategoryFragment();
+//                Bundle args=new Bundle();
+//                args.putInt("_id",_id);
+//                fragment.setArguments(args);
+//                FragmentManager fragmentManager = mainActivity.getSupportFragmentManager();
+//                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//                fragmentTransaction.replace(R.id.mainactivity2, fragment);
+//                fragmentTransaction.addToBackStack(null);
+//                fragmentTransaction.commit();
+//                mainFragment.onChangeFabVisiblity();
             }
         });
 
@@ -213,6 +242,14 @@ public class NumeroRecyclerAdapter extends RecyclerView.Adapter<NumeroRecyclerVi
     @Override
     public int getItemCount() {
         return mnumeros.size();
+    }
+
+    public void swap(List<InformationActivity> updatelist){
+        if(mnumeros!=null){
+            mnumeros.clear();
+            mnumeros.addAll(updatelist);
+        }
+
     }
 
 }

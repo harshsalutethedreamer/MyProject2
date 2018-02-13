@@ -19,14 +19,15 @@ public class GalleryRecylcerAdapter1 extends RecyclerView.Adapter<GalleryRecylce
 
     private Context mcontext;
     private String[] mfilepathstrings,mfilepathnames;
-    private int mposition;
+    private int mposition,mi;
     private String mcatergory_name;
 
-    public GalleryRecylcerAdapter1(Context context, String[] filepathstrings, String[] filepathnames,String catergory_name){
+    public GalleryRecylcerAdapter1(Context context, String[] filepathstrings, String[] filepathnames,String catergory_name,int i){
         mcontext=context;
         mfilepathnames=filepathnames;
         mfilepathstrings=filepathstrings;
         mcatergory_name=catergory_name;
+        mi=i;
     }
 
     @Override
@@ -38,7 +39,7 @@ public class GalleryRecylcerAdapter1 extends RecyclerView.Adapter<GalleryRecylce
 
     @Override
     public int getItemCount() {
-            return mfilepathnames.length;
+            return mi;
     }
 
     @Override
@@ -69,6 +70,7 @@ public class GalleryRecylcerAdapter1 extends RecyclerView.Adapter<GalleryRecylce
                     Intent i = new Intent(mcontext,Gallery2Activity.class);
                     i.putExtra("position",position);
                     i.putExtra("category_name",mcatergory_name);
+                    i.putExtra("total",mi);
                     mcontext.startActivity(i);
                 }
             }

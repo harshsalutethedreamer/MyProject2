@@ -16,6 +16,8 @@ public class StartActivity extends AppCompatActivity {
 //        setContentView(R.layout.activity_setting);
         //  Declare a new thread to do a preference check
         //  Initialize SharedPreferences
+
+
         pref = getSharedPreferences("StartingScreen", MODE_PRIVATE);
 
         //  Create a new boolean and preference and set it to true

@@ -32,6 +32,13 @@ public class FavouriteActivity extends Fragment{
     private Cursor mCursor;
     private ContentResolver mContentResolver;
     private int in=0;
+    private String TAG;
+
+    public interface MyFavouriteCall{
+        void myfavouritecallaction();
+    }
+
+    private MyFavouriteCall myFavouriteCall;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,6 +48,8 @@ public class FavouriteActivity extends Fragment{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        TAG=FavouriteActivity.class.getSimpleName();
 
         ViewGroup rootView = (ViewGroup) inflater.inflate(org.shpstartup.android.yocount.R.layout.activity_screen_slide, container, false);
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(org.shpstartup.android.yocount.R.id.fab);
@@ -57,6 +66,7 @@ public class FavouriteActivity extends Fragment{
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         // Instantiate a ViewPager and a PagerAdapter.
+        Log.d("inworking",String.valueOf(in));
         if(in>0){
             mPagerAdapter.notifyDataSetChanged();
             mPager.invalidate();
@@ -75,7 +85,6 @@ public class FavouriteActivity extends Fragment{
 
         @Override
         public Fragment getItem(int position) {
-            Log.d("positionva",String.valueOf(_id[position]));
             return new ScreenSlideFavourityFragment().newInstance(NUM_PAGES,_id,position);
         }
 
@@ -153,6 +162,11 @@ public class FavouriteActivity extends Fragment{
         intent.setDataAndType(uri, "image/*");
         intent.setType("image/jpeg");
         startActivity(intent);
+    }
+
+    public void changeFragment(){
+        Log.d(TAG,"changeFragment");
+        mPagerAdapter.notifyDataSetChanged();
     }
 
 }

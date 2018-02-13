@@ -10,9 +10,6 @@ import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
 
-/**
- * Created by harshgupta on 23/09/16.
- */
 public class VerticalViewPager extends ViewPager {
 
     private int mSlop,mMinFlingVelocity,mMaxFlingVelocity;
@@ -110,6 +107,8 @@ public class VerticalViewPager extends ViewPager {
         return intercepted;
     }
 
+
+
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         int action = ev.getActionMasked();
@@ -128,19 +127,28 @@ public class VerticalViewPager extends ViewPager {
                 break;
             case MotionEvent.ACTION_MOVE:
                 Log.d(TAG,"ACTION MOVE");
-                mVelocityTracker.addMovement(ev);
-                mVelocityTracker.computeCurrentVelocity(1000);
+                if(mVelocityTracker!=null) {
+                    mVelocityTracker.addMovement(ev);
+                    mVelocityTracker.computeCurrentVelocity(1000);
+                }
                 break;
             case MotionEvent.ACTION_UP:
                 Log.d(TAG,"ACTION UP");
                 finalX=ev.getX();
                 finalY=ev.getY();
+                break;
+            case MotionEvent.ACTION_CANCEL:
+                // Return a VelocityTracker object back to be re-used by others.
+                //mVelocityTracker.recycle();
+                break;
+
         }
         float deltaX=initialX-finalX;
         float deltaY=finalY-initialY;
         float deltaY2=initialY-finalY;
         float velocityX,velocityY;
         try {
+            Log.d("minimum",String.valueOf(pointerId));
             velocityX = VelocityTrackerCompat.getXVelocity(mVelocityTracker, pointerId);
             velocityY = VelocityTrackerCompat.getYVelocity(mVelocityTracker, pointerId);
         }catch (Exception e){
@@ -149,7 +157,11 @@ public class VerticalViewPager extends ViewPager {
         }
         try {
             int mMinFlingVelocity = vc.getScaledMinimumFlingVelocity();
-            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(velocityX) > mMinFlingVelocity) {
+            Log.d("minimum",String.valueOf(Math.abs(deltaX)));
+            Log.d("minimum",String.valueOf(Math.abs(deltaY)));
+            Log.d("minimum",String.valueOf(Math.abs(velocityX)));
+            Log.d("minimum",String.valueOf(Math.abs(mMinFlingVelocity)));
+            if ((Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(velocityX)==0) || (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(velocityX) > mMinFlingVelocity)) {
                 Log.d(TAG, "horizontal Action");
                 return false;
             } else {

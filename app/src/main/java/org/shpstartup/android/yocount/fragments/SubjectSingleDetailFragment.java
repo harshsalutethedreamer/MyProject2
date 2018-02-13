@@ -1,31 +1,41 @@
-package org.shpstartup.android.yocount;
+package org.shpstartup.android.yocount.fragments;
 
+
+import android.Manifest;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.shpstartup.android.yocount.AlbumStorageDirFactory;
+import org.shpstartup.android.yocount.BaseAlbumDirFactory;
+import org.shpstartup.android.yocount.FroyoAlbumDirFactory;
+import org.shpstartup.android.yocount.ImageContract;
+import org.shpstartup.android.yocount.NumeroContract;
+import org.shpstartup.android.yocount.NumeroDialog;
+import org.shpstartup.android.yocount.R;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,51 +46,51 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by harshgupta on 23/09/16.
+ * Created by harshgupta on 25/10/16.
  */
-public class ScreenSlideFavourityFragment extends Fragment {
+public class SubjectSingleDetailFragment extends Fragment {
 
     private int m_id,mposition=0,mtotal=0,_id=0,mcountfind=0;
     private Cursor mCursor;
     private ContentResolver mContentResolver;
-    ImageView imageadd;
-    private ImageView[] dots;
-    private LinearLayout dotsLayout;
     private String category_name;
-    private static final String CATEGORY="category_name";
-    public static final int DIALOG_FRAGMENT = 2;
     private String mCurrentPhotoPath;
-    private ImageView iv;
-    SharedPreferences pref;
+    public static final int DIALOG_FRAGMENT = 2;
+    public static final int CAMERA_REQUEST_ACCESS=5;
+    ImageView imageadd;
     private AlbumStorageDirFactory mAlbumStorageDirFactory = null;
     private static final String JPEG_FILE_PREFIX = "IMG_";
     private static final String JPEG_FILE_SUFFIX = ".jpg";
     private String imageFileName;
+    public static int idvalue;
 
-    // newInstance constructor for creating fragment with arguments
-    public static ScreenSlideFavourityFragment newInstance(int total,int[] _gid,int position){
-        ScreenSlideFavourityFragment screenSlideFavourityFragment = new ScreenSlideFavourityFragment();
-        Bundle args = new Bundle();
-        args.putInt("_id",_gid[position]);
-        args.putInt("total",total);
-        args.putInt("position",position);
-        screenSlideFavourityFragment.setArguments(args);
-        Log.d("positionv",String.valueOf(_gid[position]));
-        return screenSlideFavourityFragment;
+    public static SubjectSingleDetailFragment newInstance(int _id){
+        idvalue=_id;
+        return new SubjectSingleDetailFragment();
     }
 
-    // Store instance variables based on arguments passed
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        m_id = getArguments().getInt("_id",0);
-        mtotal = getArguments().getInt("total",0);
-        mposition=getArguments().getInt("position",0);
+    }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
-            mAlbumStorageDirFactory = new FroyoAlbumDirFactory();
-        } else {
-            mAlbumStorageDirFactory = new BaseAlbumDirFactory();
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode ==5) {
+            Log.d("funnyway","hmmm");
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                NumeroDialog dialog = new NumeroDialog();
+                dialog.setTargetFragment(SubjectSingleDetailFragment.this, DIALOG_FRAGMENT);
+                Bundle args = new Bundle();
+                args.putString(NumeroDialog.DIALOG_TYPE, NumeroDialog.IMAGE_SELECTION);
+                args.putString(NumeroContract.NumeroColumns.NUMERO_CATEGORY, category_name);
+                dialog.setArguments(args);
+                dialog.show(getFragmentManager().beginTransaction(), "image_add");
+            } else {
+
+            }
+            return;
         }
     }
 
@@ -88,65 +98,39 @@ public class ScreenSlideFavourityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(
-                R.layout.n_two, container, false);
+                R.layout.fragment_click_mainfragment, container, false);
 
+        ImageView addCount = (ImageView) rootView.findViewById(R.id.addCount);
+        ImageView subtractCount = (ImageView) rootView.findViewById(R.id.subtractCount);
+        addCount.setVisibility(View.INVISIBLE);
+        subtractCount.setVisibility(View.INVISIBLE);
 
-        if (Build.VERSION.SDK_INT >= 21) {
-            Log.d("version","21");
+        m_id = idvalue;
+        Log.d("mid",String.valueOf(m_id));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+            mAlbumStorageDirFactory = new FroyoAlbumDirFactory();
         } else {
-            Log.d("version","less than 21");
-            // Implement this feature without material design
+            mAlbumStorageDirFactory = new BaseAlbumDirFactory();
         }
 
         mContentResolver = getActivity().getContentResolver();
 
-        imageadd = (ImageView) rootView.findViewById(org.shpstartup.android.yocount.R.id.imageadd);
-        imageadd.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                imageadd.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.anim_one));
-                NumeroDialog dialog = new NumeroDialog();
-                dialog.setTargetFragment(ScreenSlideFavourityFragment.this,DIALOG_FRAGMENT);
-                Bundle args = new Bundle();
-                args.putString(NumeroDialog.DIALOG_TYPE, NumeroDialog.IMAGE_SELECTION);
-                args.putString(NumeroContract.NumeroColumns.NUMERO_CATEGORY,category_name);
-                dialog.setArguments(args);
-                dialog.show(getFragmentManager().beginTransaction(),"image_add");
+                takeScreenshot();
             }
         });
 
-        imageadd.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent motionEvent) {
-                switch(motionEvent.getAction()) {
-                    case MotionEvent.ACTION_DOWN: {
-                        ImageView view = (ImageView) v;
-                        view.getDrawable().setColorFilter(0 * 77000000, PorterDuff.Mode.SRC_ATOP);
-                        view.invalidate();
-                        break;
+        TextView textView = (TextView) rootView.findViewById(R.id.n_name);
 
-                    }
-                    case MotionEvent.ACTION_UP:
-                        break;
-                    case MotionEvent.ACTION_CANCEL: {
-                        ImageView view = (ImageView) v;
-                        view.getDrawable().clearColorFilter();
-                        break;
-                    }
-                }
-                return false;
-            }
-        });
+        final TextView textView1 = (TextView) rootView.findViewById(R.id.n_number);
 
-        TextView textView = (TextView) rootView.findViewById(org.shpstartup.android.yocount.R.id.n_name);
+        TextView textView2 = (TextView) rootView.findViewById(R.id.n_description);
 
-        final TextView textView1 = (TextView) rootView.findViewById(org.shpstartup.android.yocount.R.id.n_number);
 
-        TextView textView2 = (TextView) rootView.findViewById(org.shpstartup.android.yocount.R.id.n_description);
-
-        final ImageView addCount = (ImageView) rootView.findViewById(org.shpstartup.android.yocount.R.id.addCount);
-
-        final ImageView subtractCount = (ImageView) rootView.findViewById(org.shpstartup.android.yocount.R.id.subtractCount);
 
         String selection = NumeroContract.NumeroColumns.NUMERO_ID + " == "+m_id;
         mCursor = mContentResolver.query(NumeroContract.URI_TABLE, null,selection, null, null);
@@ -154,8 +138,6 @@ public class ScreenSlideFavourityFragment extends Fragment {
             if (mCursor.moveToFirst()) {
                 String category = mCursor.getString(
                         mCursor.getColumnIndex(NumeroContract.NumeroColumns.NUMERO_CATEGORY));
-                Log.d("valuex",String.valueOf(m_id));
-                Log.d("valuex",category);
                 textView.setText(category.toUpperCase());
                 category_name=category.toLowerCase();
 
@@ -177,83 +159,28 @@ public class ScreenSlideFavourityFragment extends Fragment {
             mCursor.close();
         }
 
-
-
-        addCount.setOnClickListener(new View.OnClickListener() {
+        imageadd = (ImageView) rootView.findViewById(R.id.imageadd);
+        imageadd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(_id!=0) {
-                    ContentValues values = new ContentValues();
-                    values.put(NumeroContract.NumeroColumns.NUMERO_COUNT, mcountfind+1);
-                    textView1.setText(String.valueOf(mcountfind+1));
-                    Uri uri = NumeroContract.Numeros.buildFriendUri(String.valueOf(_id));
-                    int recordsUpdated = mContentResolver.update(uri, values, null, null);
-                    mcountfind=mcountfind+1;
-                    ((MainActivity) getContext()).setAdapter(1);
-                }
-            }
-        });
-
-        subtractCount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(_id!=0 && mcountfind>0) {
-                    ContentValues values = new ContentValues();
-                    values.put(NumeroContract.NumeroColumns.NUMERO_COUNT, mcountfind-1);
-                    textView1.setText(String.valueOf(mcountfind-1));
-                    Uri uri = NumeroContract.Numeros.buildFriendUri(String.valueOf(_id));
-                    int recordsUpdated = mContentResolver.update(uri, values, null, null);
-                    mcountfind=mcountfind-1;
-                    ((MainActivity) getContext()).setAdapter(1);
+                if ((ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
+                        == PackageManager.PERMISSION_DENIED) || (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_DENIED)){
+                    requestPermissions(new String[] {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, CAMERA_REQUEST_ACCESS);
+                }else {
+                    imageadd.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.anim_one));
+                    NumeroDialog dialog = new NumeroDialog();
+                    dialog.setTargetFragment(SubjectSingleDetailFragment.this, DIALOG_FRAGMENT);
+                    Bundle args = new Bundle();
+                    args.putString(NumeroDialog.DIALOG_TYPE, NumeroDialog.IMAGE_SELECTION);
+                    args.putString(NumeroContract.NumeroColumns.NUMERO_CATEGORY, category_name);
+                    dialog.setArguments(args);
+                    dialog.show(getFragmentManager().beginTransaction(), "image_add");
                 }
             }
         });
 
         return rootView;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-
-        if (requestCode == 1 && resultCode == Activity.RESULT_OK && data != null) {
-            Log.d("coming","baba");
-            Uri selectedImage = data.getData();
-            AddImage(category_name,m_id,selectedImage);
-        }
-
-        else if(requestCode == DIALOG_FRAGMENT && resultCode == Activity.RESULT_OK){
-            Intent takePictureIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            File f = null;
-
-            try {
-                f = setUpPhotoFile();
-                mCurrentPhotoPath = f.getAbsolutePath();
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-            } catch (IOException e) {
-                e.printStackTrace();
-                f = null;
-                mCurrentPhotoPath = null;
-            }
-            startActivityForResult(takePictureIntent, 1);
-        }
-
-        else if(requestCode == 3 && resultCode == Activity.RESULT_OK){
-
-            dispatchTakePictureIntent(4);
-
-        }else if(requestCode == 4 && resultCode == Activity.RESULT_OK){
-            handleCameraPhoto();
-        }else if(requestCode == 4){
-            if(mCurrentPhotoPath!=null){
-                File fdelete = new File(mCurrentPhotoPath);
-                if(fdelete.exists()){
-                    fdelete.delete();
-                }
-            }
-        }
-
     }
 
     public void AddImage(String category_name,int m_id,Uri selectedImage){
@@ -322,11 +249,6 @@ public class ScreenSlideFavourityFragment extends Fragment {
         }
     }
 
-    /* Photo album for this application */
-    private String getAlbumName() {
-        return getString(R.string.app_name_small);
-    }
-
     private File getAlbumDir() {
         File storageDir = null;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
@@ -337,12 +259,8 @@ public class ScreenSlideFavourityFragment extends Fragment {
                         Log.d("CameraSample", "failed to create directory");
                         return null;
                     }
-                }else{
-                   //added on 5th November after some say photo folder is not createing. To check whether this will works...
-                    storageDir.mkdirs();
                 }
             }
-
         }else{
             Toast.makeText(getActivity().getApplication().getBaseContext(), "External storage Problem", Toast.LENGTH_SHORT).show();
         }
@@ -371,7 +289,6 @@ public class ScreenSlideFavourityFragment extends Fragment {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-            Log.d("dispatch","yes");
             File f = null;
             try {
                 f = setUpPhotoFile();
@@ -381,11 +298,13 @@ public class ScreenSlideFavourityFragment extends Fragment {
                 f = null;
                 mCurrentPhotoPath = null;
             }
+
             if(f!=null){
                 Uri photoUri= FileProvider.getUriForFile(getContext(),"com.example.android.fileprovider",f);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                 startActivityForResult(takePictureIntent, actionCode);
             }
+
         }
     }
 
@@ -443,6 +362,94 @@ public class ScreenSlideFavourityFragment extends Fragment {
         }
     }
 
+    public void takeScreenshot() {
+        long ncreatedtime= TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis());
+
+        try {
+            File folder = new File(Environment.getExternalStorageDirectory() + "/yocount");
+            if (!folder.exists()) {
+                folder.mkdir();
+            }
+            // image naming and path  to include sd card  appending name you choose for file
+            String mPath = folder + "/" + ncreatedtime + ".jpg";
+
+            // create bitmap screen capture
+            View v1 = getActivity().getWindow().getDecorView().getRootView();
+            v1.setDrawingCacheEnabled(true);
+            Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+            v1.setDrawingCacheEnabled(false);
+
+            File imageFile = new File(mPath);
+
+            FileOutputStream outputStream = new FileOutputStream(imageFile);
+            int quality = 100;
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+            outputStream.flush();
+            outputStream.close();
+            openScreenshot(imageFile);
+
+        } catch (Throwable e) {
+            // Several error may come out with file handling or OOM
+            e.printStackTrace();
+        }
+    }
+    private void openScreenshot(File imageFile) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_SEND);
+        Uri uri = Uri.fromFile(imageFile);
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+
+        intent.setDataAndType(uri, "image/*");
+        intent.setType("image/jpeg");
+        startActivity(intent);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("coming","reply");
+
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK && data != null) {
+
+            Uri selectedImage = data.getData();
+
+            Log.d("categoryx",category_name);
+
+            AddImage(category_name,m_id,selectedImage);
+        }
+
+        else if(requestCode == DIALOG_FRAGMENT && resultCode == Activity.RESULT_OK){
+            Intent takePictureIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            File f = null;
+
+            try {
+                f = setUpPhotoFile();
+                mCurrentPhotoPath = f.getAbsolutePath();
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+            } catch (IOException e) {
+                e.printStackTrace();
+                f = null;
+                mCurrentPhotoPath = null;
+            }
+            startActivityForResult(takePictureIntent, 1);
+        }
+
+        else if(requestCode == 3 && resultCode == Activity.RESULT_OK){
+            dispatchTakePictureIntent(4);
+
+        }else if(requestCode == 4 && resultCode == Activity.RESULT_OK){
+            handleCameraPhoto();
+        }else if(requestCode == 4){
+            if(mCurrentPhotoPath!=null){
+                File fdelete = new File(mCurrentPhotoPath);
+                if(fdelete.exists()){
+                    fdelete.delete();
+                }
+            }
+        }
+
+    }
+
     private void galleryAddPicx() {
         Intent mediaScanIntent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
         File f = new File(mCurrentPhotoPath);
@@ -451,6 +458,8 @@ public class ScreenSlideFavourityFragment extends Fragment {
         getActivity().sendBroadcast(mediaScanIntent);
     }
 
-
-
+    /* Photo album for this application */
+    private String getAlbumName() {
+        return getString(R.string.app_name_small);
+    }
 }

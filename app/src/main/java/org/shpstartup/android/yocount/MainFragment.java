@@ -35,6 +35,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     private EditText mSearchEditText;
     private LinearLayout linearLayout;
     private RelativeLayout relativeLayout;
+    FloatingActionButton fab;
 
 
 
@@ -74,7 +75,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(org.shpstartup.android.yocount.R.id.fab);
+        fab = (FloatingActionButton) rootView.findViewById(org.shpstartup.android.yocount.R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -85,7 +86,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
         linearLayout = (LinearLayout) rootView.findViewById(R.id.linearlayout);
 
-        getActivity().getSupportLoaderManager().initLoader(LOADER_ID++, null,this);
+        getActivity().getSupportLoaderManager().initLoader(LOADER_ID, null,this);
         return rootView;
     }
 
@@ -94,6 +95,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         mContentResolver=getActivity().getContentResolver();
         Log.d("valuex",String.valueOf(id));
         if(id==1){
+            Log.d("working","changeFragmentohyear");
             return new NumeroListLoader(getActivity(),NumeroContract.URI_TABLE, mContentResolver);
         }else{
             return new NumerosSearchListLoader(getActivity(),NumeroContract.URI_TABLE,mContentResolver,matchText);
@@ -107,7 +109,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         Log.d("mumeros",String.valueOf(numeros.size()));
         if(numeros.size()>0) {
             relativeLayout.setVisibility(View.GONE);
-            numeroRecyclerAdapter = new NumeroRecyclerAdapter((MainActivity) getActivity(),getActivity(), mnumeros,getActivity().getSupportFragmentManager(),mRecyclerView);
+            numeroRecyclerAdapter = new NumeroRecyclerAdapter((MainActivity) getActivity(),getActivity(), mnumeros,getActivity().getSupportFragmentManager(),mRecyclerView,(MainFragment) this);
             mRecyclerView.setAdapter(numeroRecyclerAdapter);
         }else{
          relativeLayout.setVisibility(View.VISIBLE);
@@ -120,4 +122,15 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     public void onLoaderReset(Loader<List<InformationActivity>> loader) {
 
     }
+
+    public void changeFragment(){
+        Log.d("working","changeFragmentx");
+        getActivity().getSupportLoaderManager().initLoader(LOADER_IDA++, null,MainFragment.this);
+    }
+
+//    public void onChangeFabVisiblity(){
+//        fab.setVisibility(View.INVISIBLE);
+//    }
+
+
 }
